@@ -2,7 +2,7 @@
 
 import { Note } from "@/types/notes"
 
-const API_URL = process.env.API_URL || 'http://127.0.0.1:8000'
+const API_URL = process.env.API_URL || ''
 
 /**
  * createNote() - Create a new note
