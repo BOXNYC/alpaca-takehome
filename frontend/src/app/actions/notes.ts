@@ -1,6 +1,7 @@
 'use server'
 
 import { Note } from "@/types/notes"
+import OpenAI from "openai";
 
 const API_URL = process.env.API_URL || ''
 
@@ -40,4 +41,26 @@ export async function updateNoteById(id: number, note: Note): Promise<Note> {
         body: JSON.stringify(note),
     });
     return await resp.json();
+}
+
+export async function summarize(content: string): Promise<string> {
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+        dangerouslyAllowBrowser: true,
+    });
+    const notes = content || '';
+    const completion = await openai.chat.completions.create({
+        messages: [{
+            role: 'user',
+            content: `
+                summarize my notes in an descriptive and readable format, whitout bullet points or numbers, and don't leave anything out. Use a clinical writing style
+
+                Notes:
+                ======
+                ${notes}`
+        }],
+        model: 'gpt-4o',
+    });
+    if (!completion.choices.length) return content;
+    return completion.choices[0].message.content as string;
 }

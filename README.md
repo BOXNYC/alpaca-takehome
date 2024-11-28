@@ -26,7 +26,7 @@ fastapi dev main.py
 #### Env Vars
 1. Change the name of template.env to .env
 2. Change the API_URL to your API's IP and port.
-3. Provide your OpenAI API Key to the NEXT_PUBLIC_OPENAI_API_KEY var.
+3. Provide your OpenAI API Key to the OPENAI_API_KEY var.
 
 ## Run the frontend
 

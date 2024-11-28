@@ -1,45 +1,24 @@
 'use client'
 
-import { getNoteById, updateNoteById } from "@/app/actions/notes";
+import { getNoteById, summarize, updateNoteById } from "@/app/actions/notes";
 import { Note } from "@/types/notes";
-import OpenAI from "openai";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-export default function({action, id}: {action?: (formData: FormData) => void, id?: number}) {
+export default function NoteForm({action, id}: {action?: (formData: FormData) => void, id?: number}) {
     const [note, setNote] = useState<Note | null>(null);
-    const updateAction = (formData: FormData) => {
+
+    const updateAction = useCallback((formData: FormData) => {
         const updatedNote = Object.fromEntries(formData) as Note;
         updateNoteById(id as number, updatedNote);
         setNote(updatedNote);
-    }
-    const generateSummary = async () => {
-        const openai = new OpenAI({
-            apiKey: process.env["NEXT_PUBLIC_OPENAI_API_KEY"],
-            dangerouslyAllowBrowser: true,
-        });
-        const notes = note?.content || '';
-        const completion = await openai.chat.completions.create({
-            messages: [{
-                role: 'user',
-                content: `
-                    summarize my notes in an descriptive and readable format, whitout bullet points or numbers, and don't leave anything out.
+    }, [setNote, id]);
 
-                    Notes:
-                    ======
+    const generateSummary = useCallback(async () => {
+        const summary = await summarize(note?.content || '');
+        setNote({...note, content: summary});
+    }, [setNote, note]);
 
-                    ${notes}`
-            }],
-            model: 'gpt-4o',
-        });
-        completion.choices.forEach((choice) => {
-            setNote((current: Note | null) => {
-                if (current === null) return null;
-                return {...current, content: choice.message.content as string}
-            });
-        });
-    }
     useEffect(() => {
-        console.log(id)
         if (id !== undefined) getNoteById(id).then((note: Note) => {
             setNote(note);
         }).catch((err: Error) => {
@@ -52,7 +31,7 @@ export default function({action, id}: {action?: (formData: FormData) => void, id
     
     return (<form action={action || updateAction}>
         <div className="mb-4">
-            <label className="block me-4 mb-4">Patient's Name</label>
+            <label className="block mb-4">Patient's Name</label>
             <input
                 type={editMode ? 'hidden' : 'text'}
                 name="patientName"
