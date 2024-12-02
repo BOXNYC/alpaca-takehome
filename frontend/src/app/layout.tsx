@@ -30,14 +30,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <header className="fixed top-4 w-full left-0 text-center">
+        <header className="fixed top-0 w-full left-0 text-center backdrop-blur-2xl">
           <Link href="/" className="flex justify-center items-center">
-            <Image src="/logo.jpg" width={100} height={100} alt="" />
+            <Image src="/logo.jpg" width={100} height={100} alt="" className="rounded-full me-4" />
             <span className="text-2xl text-gray-500">Patient Notes</span>
           </Link>
         </header>
         {children}
-        <footer className="fixed bottom-4 text-sm text-gray-500 w-full left-0 text-center">
+        <footer className="fixed bottom-0 text-sm text-gray-500 w-full left-0 text-center backdrop-blur-2xl py-8">
           <p>© Alpaca Notes App</p>
         </footer>
       </body>
